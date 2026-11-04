@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이예찬 · 연구 포트폴리오</title>
+<meta name="description" content="저독성 추진제 점화 실험용 인젝터와 공급계의 직접 설계, 그리고 시험을 통한 검증">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="index.html">이예찬</a>
+  <nav class="menu" aria-label="페이지">
+    <a href="index.html" aria-current="page">소개</a>
+    <a href="experience.html">경험</a>
+    <a href="works.html">작업물</a>
+  </nav>
+</div></header>
+
+<main><div class="wrap">
+
+<section class="hero">
+  <div>
+    <p class="status">PROPULSION · IGNITION · TEST</p>
+    <h1>이예찬</h1>
+    <p class="who">한국항공대학교 항공우주 및 기계공학과</p>
+    <p class="line">저독성 추진제 점화 실험용 인젝터와 공급계의 직접 설계, 그리고 시험을 통한 검증</p>
+  </div>
+  <!-- 이중 충돌형 인젝터: 두 액주(충돌각 60°)가 만나는 점에서 점화되어 아래로 퍼지는 불꽃 -->
+  <svg class="inj" viewBox="0 0 220 340" aria-hidden="true">
+    <defs>
+      <radialGradient id="flame" cx="110" cy="96" r="230" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#fffbe8"/>
+        <stop offset=".12" stop-color="#ffe08a"/>
+        <stop offset=".38" stop-color="#ffa03a"/>
+        <stop offset=".7" stop-color="#ff7a2f" stop-opacity=".55"/>
+        <stop offset="1" stop-color="#ff7a2f" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="halo" cx="110" cy="110" r="200" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#d8f06a" stop-opacity=".45"/>
+        <stop offset=".6" stop-color="#b8e05a" stop-opacity=".18"/>
+        <stop offset="1" stop-color="#b8e05a" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="spark" cx=".5" cy=".5" r=".5">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset=".4" stop-color="#ffe08a" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#ff7a2f" stop-opacity="0"/>
+      </radialGradient>
+      <linearGradient id="fadeDown" x1="0" y1="90" x2="0" y2="330" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#fff"/>
+        <stop offset=".45" stop-color="#fff"/>
+        <stop offset="1" stop-color="#000"/>
+      </linearGradient>
+      <mask id="fade" maskUnits="userSpaceOnUse" x="0" y="0" width="220" height="340">
+        <rect x="0" y="0" width="220" height="340" fill="url(#fadeDown)"/>
+      </mask>
+      <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#c9d3e3"/>
+        <stop offset="1" stop-color="#7d8aa3"/>
+      </linearGradient>
+    </defs>
+    <!-- 불꽃: 바깥 연두빛 → 주황 → 밝은 심 -->
+    <g mask="url(#fade)"><g class="fire">
+      <path d="M110 90 C86 120 34 180 16 250 C6 290 14 320 24 336 L196 336 C206 320 214 290 204 250 C186 180 134 120 110 90 Z" fill="url(#halo)"/>
+      <path d="M110 88 C92 112 56 170 44 236 C38 272 46 306 58 330 L162 330 C174 306 182 272 176 236 C164 170 128 112 110 88 Z" fill="url(#flame)"/>
+      <path d="M110 90 C103 110 96 140 98 172 Q110 184 122 172 C124 140 117 110 110 90 Z" fill="#fff4cc" opacity=".6"/>
+    </g></g>
+    <!-- 인젝터 몸체와 두 오리피스 -->
+    <rect x="62" y="14" width="96" height="34" rx="4" fill="url(#body)"/>
+    <rect x="62" y="44" width="96" height="6" fill="#4b5872"/>
+    <circle cx="92" cy="50" r="3" fill="#0c1322"/>
+    <circle cx="128" cy="50" r="3" fill="#0c1322"/>
+    <!-- 두 액주: 연료와 산화제(IGHP), 축에서 각 30° -->
+    <line class="jet" x1="92" y1="50" x2="110" y2="81" stroke="#e9edf5" stroke-width="3" stroke-linecap="round"/>
+    <line class="jet" x1="128" y1="50" x2="110" y2="81" stroke="#6cb6ff" stroke-width="3" stroke-linecap="round"/>
+    <!-- 충돌점 -->
+    <circle class="spark" cx="110" cy="84" r="16" fill="url(#spark)"/>
+    <text class="lbl" x="88" y="70" text-anchor="end">FUEL</text>
+    <text class="lbl" x="132" y="70">IGHP</text>
+  </svg>
+</section>
+
+<section class="sec">
+  <p class="kicker">01 · CAPABILITIES</p>
+  <h2>할 수 있는 일</h2>
+  <ul class="skills">
+    <li data-n="01"><b>장치를 설계하고 시험으로 검증하기</b>
+      <span>근거: <a href="experience.html#injector">인젝터·공급계 설계와 수류시험</a>, <a href="experience.html#oscillator">유체진동기 측정 방식 설계</a>, <a href="experience.html#combustion">10 N급 연소시험 준비</a></span></li>
+    <li data-n="02"><b>결과가 흔들릴 때 변수를 나눠 원인을 다시 찾기</b>
+      <span>근거: <a href="experience.html#propellant">배합비·교반 조건 재추적</a>, <a href="experience.html#oscillator">연결 방식·호스 재질별 경향 실험</a></span></li>
+    <li data-n="03"><b>실험 전 안전과 체결 상태를 점검하기</b>
+      <span>근거: <a href="experience.html#propellant">구성원 MSDS 숙지</a>, <a href="experience.html#combustion">공급계·체결 상태 최종 확인</a>, <a href="experience.html#airforce">정비 습관을 실험 안전에 적용</a></span></li>
+  </ul>
+</section>
+
+<section class="sec">
+  <p class="kicker">02 · FEATURED RESEARCH</p>
+  <h2>대표 연구</h2>
+  <article class="card">
+    <span class="tag">KSPE 2026 추계 · KSPE 2026-2380</span>
+    <h3>충돌형 인젝터를 이용한 저독성 접촉점화 추진제의 액주 충돌 실험</h3>
+    <p class="small">직접 설계한 장치로 실험해 학회 발표까지 이어진 연구. 설계와 검증을 함께 보여 주는 사례</p>
+    <div class="nums">
+      <div class="num"><b>0.6 mm</b><span>인젝터 직경</span></div>
+      <div class="num"><b>60°</b><span>충돌각</span></div>
+      <div class="num"><b>2 / 2</b><span>연료 2종 모두 액주 충돌에서도 접촉점화 유지</span></div>
+    </div>
+    <dl class="qa">
+      <dt>연구 질문</dt>
+      <dd>자체 개발한 저독성 연료가 실제 인젝터 분사 조건, 곧 산업용 과산화수소(IGHP)와 액주로 충돌할 때도 접촉점화되는가?</dd>
+      <dt>내가 한 일</dt>
+      <dd><ul>
+        <li>추진제 밀도·점도와 액주 안정성을 고려해, 목표 운동량을 만족하는 질량유량과 분사 속도 결정</li>
+        <li>충돌각과 충돌 거리를 정해 이중 충돌형 인젝터 설계, 가공성을 두고 제작업체와 협의해 형상 수정</li>
+        <li>공급계와 압력·유량 계측 방안 설계</li>
+        <li>수류시험으로 충돌점과 분무 형상을 확인한 뒤, 균일 혼합 조건에서 연료 2종의 액주 충돌 실험 수행</li>
+      </ul></dd>
+      <dt>알아낸 것</dt>
+      <dd>액적낙하 실험으로 고른 연료 2종 모두 IGHP와의 액주 충돌 조건에서도 접촉점화성 유지</dd>
+      <dt>다음 할 것</dt>
+      <dd>모멘텀 비를 1로 유지하면서 절대 모멘텀을 바꿔, 두 연료의 점화특성 비교</dd>
+    </dl>
+    <a class="more" href="experience.html#injector">경험 페이지에서 자세히 보기 →</a>
+  </article>
+</section>
+
+<section class="sec">
+  <p class="kicker">03 · PRESENTATIONS</p>
+  <h2>학회 발표</h2>
+  <div class="tablewrap"><table>
+    <thead><tr><th>학회</th><th>제목</th></tr></thead>
+    <tbody>
+      <tr><td class="nowrap">한국추진공학회<br>2026 추계</td><td>균일 혼합 조건의 액주 충돌 실험을 통한 저독성 접촉점화 추진제 점화특성 연구 <span class="small">KSPE 2026-2380</span></td></tr>
+      <tr><td class="nowrap">한국추진공학회<br>2026 춘계</td><td>온도 조건에 따른 저독성 접촉점화 추진제 점화특성 비교 <span class="small">KSPE 2026-1205</span></td></tr>
+      <tr><td class="nowrap">한국유체기계학회<br>하계학술대회</td><td>상호 연결된 물 유체진동기의 동조 방법 탐색 <span class="small">포스터</span></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec">
+  <p class="kicker">04 · WORKS</p>
+  <h2>작업물</h2>
+  <a class="card work" href="works.html">
+    <span class="tag">대시보드</span>
+    <h3>야외 실험 가능 시간</h3>
+    <p class="small">Open-Meteo 예보로 앞으로 7일의 바람과 비를 받아, 정한 기준에 맞는 시간을 찾아 주는 화면</p>
+    <span class="more">작업물 보기 →</span>
+  </a>
+</section>
+
+<section class="sec">
+  <p class="kicker">05 · FLIGHT LOG</p>
+  <h2>경험</h2>
+  <p>저독성 접촉점화 추진제 과제, 유체진동기 연구, 유체역학 수업 조교, 공군 F-5 기체정비병 복무를 <a href="experience.html">경험 페이지</a>에 시간순으로 정리</p>
+</section>
+
+</div></main>
+
+<footer class="bottom"><div class="wrap">이 페이지는 Claude Code와 함께 만들었고 내용은 본인이 확인했다</div></footer>
+</body>
+</html>

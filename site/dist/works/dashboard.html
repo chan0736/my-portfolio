@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>야외 실험 가능 시간</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f6f6f3;--card:#fcfcfb;--ink:#0b0b0b;--sub:#52514e;--muted:#7a7974;--line:#e2e1db;--grid:#ecebe6;
+  --accent:#1f7a4d;--ok:#dff0e5;--okink:#17603c;--bad:#b3261e;--badsoft:#fbeae8;
+  --wind:#2a78d6;--gust:#eb6834;--rain:#5b8fc9;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#121211;--card:#1a1a19;--ink:#f0efec;--sub:#c3c2b7;--muted:#9a998f;--line:#33322f;--grid:#2a2a28;
+    --accent:#4fbf86;--ok:#1d3a2a;--okink:#8fdcb2;--bad:#f2867f;--badsoft:#3a1f1d;
+    --wind:#3987e5;--gust:#d95926;--rain:#6e9fd6;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#121211;--card:#1a1a19;--ink:#f0efec;--sub:#c3c2b7;--muted:#9a998f;--line:#33322f;--grid:#2a2a28;
+  --accent:#4fbf86;--ok:#1d3a2a;--okink:#8fdcb2;--bad:#f2867f;--badsoft:#3a1f1d;
+  --wind:#3987e5;--gust:#d95926;--rain:#6e9fd6;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
+main{max-width:960px;margin:0 auto;padding:24px 16px 56px}
+h1{font-size:26px;line-height:1.35;margin:0 0 4px}
+h2{font-size:18px;margin:0 0 8px}
+.lead{color:var(--sub);margin:0 0 16px}
+.note{font-size:13.5px;color:var(--sub)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+.big{font-size:30px;font-weight:700;color:var(--accent);line-height:1.3;margin:2px 0 4px;word-break:keep-all}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px 22px}
+label{display:block;font-size:14px;color:var(--sub)}
+label b{color:var(--ink);font-size:16px;margin-left:6px}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.err{background:var(--badsoft);color:var(--bad);border-radius:10px;padding:12px 14px;margin:12px 0}
+.err .why{font-size:13.5px}
+button{font:inherit;font-size:14px;border:1px solid currentColor;background:transparent;color:inherit;border-radius:8px;padding:5px 12px;cursor:pointer;margin-top:8px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:13.5px;color:var(--sub);margin:4px 0 8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{display:inline-block;width:18px;height:0;border-top:2.5px solid}
+.sw.wind{border-color:var(--wind)}
+.sw.gust{border-color:var(--gust);border-top-style:dashed}
+.sw.box{height:12px;width:14px;border:0;border-radius:3px}
+.sw.ok{background:var(--ok);outline:1px solid var(--okink)}
+.sw.rain{background:var(--rain)}
+.chartwrap{position:relative;overflow-x:auto}
+svg{display:block;width:100%;min-width:640px;height:auto}
+svg text{font-size:11px;fill:var(--muted)}
+.tip{position:absolute;pointer-events:none;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:13px;line-height:1.5;box-shadow:0 2px 8px rgba(0,0,0,.12);white-space:nowrap}
+.tip b{display:block}
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
+th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:right;white-space:nowrap}
+th:first-child,td:first-child,th:last-child,td:last-child{text-align:left}
+th{color:var(--sub);font-weight:600;font-size:13px}
+tr.ok td{background:var(--ok)}
+tr.ok td:last-child{color:var(--okink);font-weight:700}
+td.no{color:var(--muted)}
+.count{font-size:15px;font-weight:700;color:var(--accent);margin-left:6px}
+footer{margin-top:24px;font-size:13.5px;color:var(--sub)}
+footer p{margin:4px 0}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<h1>야외 실험 가능 시간</h1>
+<p class="lead">한국항공대학교 지점의 앞으로 7일 시간별 바람·비 예보로, 기준에 맞는 시간을 찾아요.</p>
+
+<div id="err" class="err" role="alert" hidden>
+  <b>데이터를 받지 못했어요</b>
+  <div class="why" id="errWhy"></div>
+  <button id="retry" type="button">다시 받기</button>
+</div>
+
+<section class="card" aria-live="polite">
+  <div class="note">기준에 맞는 가장 긴 연속 시간대</div>
+  <div class="big" id="best">불러오는 중…</div>
+  <div class="note" id="bestMeta"></div>
+</section>
+
+<section class="card grid" aria-label="가능 기준">
+  <div><label for="w">풍속 기준 (이보다 약해야 가능)<b id="wv"></b></label>
+    <input id="w" type="range" min="2" max="40" step="1"></div>
+  <div><label for="g">돌풍 기준 (이보다 약해야 가능)<b id="gv"></b></label>
+    <input id="g" type="range" min="4" max="60" step="1"></div>
+  <div><label for="p">강수 기준 (시간당 이하면 가능, 0 = 비 없음)<b id="pv"></b></label>
+    <input id="p" type="range" min="0" max="2" step="0.1"></div>
+</section>
+
+<section class="card">
+  <h2>7일 시간별 바람</h2>
+  <div class="legend">
+    <span><i class="sw wind"></i>풍속 (km/h)</span>
+    <span><i class="sw gust"></i>돌풍 (km/h)</span>
+    <span><i class="sw box ok"></i>가능 시간</span>
+    <span><i class="sw box rain"></i>강수 (mm, 아래 띠)</span>
+  </div>
+  <div class="chartwrap" id="chartwrap">
+    <svg id="chart" viewBox="0 0 900 300" role="img" aria-label="7일 시간별 풍속·돌풍·강수 그래프"></svg>
+    <div class="tip" id="tip" hidden></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>첫날 24시간 <span class="count" id="dayCount"></span></h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>시각</th><th>풍속 (km/h)</th><th>돌풍 (km/h)</th><th>강수 (mm)</th><th>가능</th></tr></thead>
+      <tbody id="rows"><tr><td colspan="5" class="no">불러오는 중…</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<footer>
+  <p id="meta">단위: 풍속·돌풍 km/h, 강수 mm(시간당) · 시간대 Asia/Seoul</p>
+  <p>출처: <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a> 예보 API (CC BY 4.0).</p>
+  <p>예보값이라 실제와 다를 수 있어요. 가능 기준은 연습용이에요</p>
+</footer>
+</main>
+
+<script>
+// 지점과 기본 기준 (site/content/dashboard.json 과 같은 값)
+const CFG = { name: "한국항공대학교", lat: 37.600, lon: 126.865, wind_max_kmh: 10, gust_max_kmh: 20, rain_max_mm: 0 };
+const FIELDS = ["wind_speed_10m", "wind_gusts_10m", "precipitation"];
+const UNITS = { wind_speed_10m: "km/h", wind_gusts_10m: "km/h", precipitation: "mm" };
+const API = "https://api.open-meteo.com/v1/forecast"
+  + `?latitude=${CFG.lat.toFixed(3)}&longitude=${CFG.lon.toFixed(3)}`
+  + `&hourly=${FIELDS.join(",")}&forecast_days=7&timezone=Asia%2FSeoul`;
+const TIMEOUT_MS = 10000;
+
+const $ = id => document.getElementById(id);
+const DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+let D = null;          // 받은 응답
+let fetchedAt = "";    // 받은 시각 (서울)
+let flags = [];
+
+// "2026-11-04T09:00" → 문자열 그대로 읽어서 브라우저 시간대와 무관하게
+function parts(t) {
+  const [y, m, d] = t.slice(0, 10).split("-").map(Number);
+  const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+  return { m, d, h: t.slice(11, 13), wd };
+}
+const dayLab = t => { const p = parts(t); return `${p.m}/${p.d}(${DAYS[p.wd]})`; };
+const fullLab = t => `${dayLab(t)} ${parts(t).h}시`;
+const num = v => (v === null || v === undefined || Number.isNaN(v)) ? null : Number(v);
+const fmt = v => v === null ? "–" : v.toFixed(1);
+
+function crit() { return { w: +$("w").value, g: +$("g").value, p: +$("p").value }; }
+function isOk(i, c) {
+  const h = D.hourly, w = num(h.wind_speed_10m[i]), g = num(h.wind_gusts_10m[i]), p = num(h.precipitation[i]);
+  if (w === null || g === null || p === null) return false;
+  return w < c.w && g < c.g && p <= c.p + 1e-9;
+}
+
+function validate(d) {
+  const h = d && d.hourly;
+  if (!h || !Array.isArray(h.time) || h.time.length === 0) throw new Error("응답에 시간 목록이 없어요");
+  for (const f of FIELDS) {
+    if (!Array.isArray(h[f])) throw new Error(`응답에 ${f} 항목이 없어요`);
+    if (h[f].length !== h.time.length) throw new Error(`${f} 길이가 시간 목록과 달라요`);
+    const u = d.hourly_units && d.hourly_units[f];
+    if (u !== UNITS[f]) throw new Error(`${f} 단위가 ${UNITS[f]} 가 아니에요 (${u})`);
+  }
+  if (d.timezone !== "Asia/Seoul") throw new Error(`시간대가 Asia/Seoul 이 아니에요 (${d.timezone})`);
+}
+
+function showLabels() {
+  const c = crit();
+  $("wv").textContent = c.w + " km/h";
+  $("gv").textContent = c.g + " km/h";
+  $("pv").textContent = c.p.toFixed(1) + " mm";
+}
+
+function draw() {
+  showLabels();
+  if (!D) return;
+  const c = crit(), h = D.hourly, n = h.time.length;
+  flags = h.time.map((_, i) => isOk(i, c));
+
+  // 가장 긴 연속 구간 (같으면 이른 쪽)
+  let bestLen = 0, bestStart = -1, run = 0, start = 0;
+  flags.forEach((f, i) => {
+    if (f) { if (!run) start = i; run++; if (run > bestLen) { bestLen = run; bestStart = start; } }
+    else run = 0;
+  });
+  const total = flags.filter(Boolean).length;
+  if (!bestLen) {
+    $("best").textContent = "이번 7일에는 가능 시간이 없어요";
+    $("bestMeta").textContent = "슬라이더로 기준을 조금 넓혀 보세요.";
+  } else {
+    const a = bestStart, b = a + bestLen - 1;
+    const endT = b + 1 < n ? h.time[b + 1] : null;
+    const endTxt = endT ? (endT.slice(0, 10) === h.time[a].slice(0, 10) ? `${parts(endT).h}시` : fullLab(endT)) : `${dayLab(h.time[b])} 24시 (예보 끝)`;
+    $("best").textContent = `${fullLab(h.time[a])} ~ ${endTxt} · ${bestLen}시간`;
+    const ws = h.wind_speed_10m.slice(a, b + 1).map(Number), gs = h.wind_gusts_10m.slice(a, b + 1).map(Number);
+    const ps = h.precipitation.slice(a, b + 1).map(Number);
+    const avg = ws.reduce((s, v) => s + v, 0) / ws.length;
+    $("bestMeta").textContent = `구간 평균 풍속 ${avg.toFixed(1)} km/h, 최대 돌풍 ${Math.max(...gs).toFixed(1)} km/h, 강수 합 ${ps.reduce((s, v) => s + v, 0).toFixed(1)} mm · 7일 전체 가능 ${total}시간`;
+  }
+
+  drawChart();
+  drawTable();
+}
+
+const CH = { W: 900, H: 300, L: 38, R: 10, T: 10, windB: 220, rainT: 236, rainB: 270 };
+function drawChart() {
+  const h = D.hourly, n = h.time.length;
+  const ws = h.wind_speed_10m.map(num), gs = h.wind_gusts_10m.map(num), ps = h.precipitation.map(num);
+  const top = Math.max(20, ...gs.filter(v => v !== null), ...ws.filter(v => v !== null));
+  const max = Math.ceil(top * 1.08 / 10) * 10;
+  const pmax = Math.max(1, ...ps.filter(v => v !== null));
+  const bw = (CH.W - CH.L - CH.R) / n;
+  const x = i => CH.L + (i + 0.5) * bw;
+  const y = v => CH.T + (1 - v / max) * (CH.windB - CH.T);
+  let s = "";
+  // 가능 시간 칠하기 (연속 구간을 한 덩어리로)
+  for (let i = 0; i < n; i++) {
+    if (!flags[i]) continue;
+    let j = i; while (j + 1 < n && flags[j + 1]) j++;
+    s += `<rect x="${(CH.L + i * bw).toFixed(1)}" y="${CH.T}" width="${((j - i + 1) * bw).toFixed(1)}" height="${CH.rainB - CH.T}" fill="var(--ok)"/>`;
+    i = j;
+  }
+  // 가로 눈금
+  for (let v = 0; v <= max; v += 10) {
+    s += `<line x1="${CH.L}" x2="${CH.W - CH.R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)"/>`;
+    s += `<text x="${CH.L - 6}" y="${y(v) + 4}" text-anchor="end">${v}</text>`;
+  }
+  // 날짜 구분선
+  for (let i = 0; i < n; i++) {
+    if (h.time[i].slice(11, 13) !== "00") continue;
+    const xx = CH.L + i * bw;
+    s += `<line x1="${xx}" x2="${xx}" y1="${CH.T}" y2="${CH.rainB}" stroke="var(--line)"/>`;
+    s += `<text x="${xx + 4}" y="${CH.H - 12}">${dayLab(h.time[i])}</text>`;
+  }
+  // 강수 띠 (별도 눈금)
+  s += `<line x1="${CH.L}" x2="${CH.W - CH.R}" y1="${CH.rainB}" y2="${CH.rainB}" stroke="var(--line)"/>`;
+  s += `<text x="${CH.L - 6}" y="${CH.rainB}" text-anchor="end">0</text>`;
+  s += `<text x="${CH.L - 6}" y="${CH.rainT + 8}" text-anchor="end">${pmax.toFixed(1)}</text>`;
+  ps.forEach((v, i) => {
+    if (!v) return;
+    const hh = v / pmax * (CH.rainB - CH.rainT);
+    s += `<rect x="${(CH.L + i * bw + 0.3).toFixed(1)}" y="${(CH.rainB - hh).toFixed(1)}" width="${Math.max(bw - 0.6, 0.8).toFixed(1)}" height="${hh.toFixed(1)}" rx="1" fill="var(--rain)"/>`;
+  });
+  s += `<text x="${CH.W - CH.R}" y="${CH.rainT - 3}" text-anchor="end">강수 mm</text>`;
+  s += `<text x="${CH.L + 4}" y="${CH.T + 11}">km/h</text>`;
+  // 선 (빈 값은 끊어서)
+  const path = arr => {
+    let d = "", pen = false;
+    arr.forEach((v, i) => { if (v === null) { pen = false; return; } d += `${pen ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true; });
+    return d;
+  };
+  s += `<path d="${path(gs)}" fill="none" stroke="var(--gust)" stroke-width="1.8" stroke-dasharray="5 3" stroke-linejoin="round"/>`;
+  s += `<path d="${path(ws)}" fill="none" stroke="var(--wind)" stroke-width="2.2" stroke-linejoin="round"/>`;
+  // 마우스 표시
+  s += `<g id="hover" visibility="hidden"><line id="hx" y1="${CH.T}" y2="${CH.rainB}" stroke="var(--muted)" stroke-width="1"/>`
+     + `<circle id="hw" r="4" fill="var(--wind)" stroke="var(--card)" stroke-width="2"/>`
+     + `<circle id="hg" r="4" fill="var(--gust)" stroke="var(--card)" stroke-width="2"/></g>`;
+  s += `<rect id="hit" x="${CH.L}" y="0" width="${CH.W - CH.L - CH.R}" height="${CH.H}" fill="transparent"/>`;
+  $("chart").innerHTML = s;
+  bindHover(ws, gs, ps, x, y, bw);
+}
+
+function bindHover(ws, gs, ps, x, y, bw) {
+  const svg = $("chart"), tip = $("tip"), wrap = $("chartwrap"), g = $("hover");
+  const move = ev => {
+    const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    const i = Math.max(0, Math.min(ws.length - 1, Math.floor((p.x - CH.L) / bw)));
+    g.setAttribute("visibility", "visible");
+    $("hx").setAttribute("x1", x(i)); $("hx").setAttribute("x2", x(i));
+    const setDot = (id, v) => { const el = $(id); if (v === null) el.setAttribute("visibility", "hidden"); else { el.removeAttribute("visibility"); el.setAttribute("cx", x(i)); el.setAttribute("cy", y(v)); } };
+    setDot("hw", ws[i]); setDot("hg", gs[i]);
+    tip.innerHTML = `<b>${fullLab(D.hourly.time[i])}</b>풍속 ${fmt(ws[i])} km/h<br>돌풍 ${fmt(gs[i])} km/h<br>강수 ${fmt(ps[i])} mm<br>${flags[i] ? "가능" : "불가"}`;
+    tip.hidden = false;
+    const r = wrap.getBoundingClientRect();
+    let left = ev.clientX - r.left + wrap.scrollLeft + 12;
+    if (left + tip.offsetWidth > wrap.scrollLeft + r.width) left = ev.clientX - r.left + wrap.scrollLeft - tip.offsetWidth - 12;
+    tip.style.left = left + "px"; tip.style.top = Math.max(0, ev.clientY - r.top - 20) + "px";
+  };
+  const hit = $("hit");
+  hit.addEventListener("pointermove", move);
+  hit.addEventListener("pointerdown", move);
+  hit.addEventListener("pointerleave", () => { g.setAttribute("visibility", "hidden"); tip.hidden = true; });
+}
+
+function drawTable() {
+  const h = D.hourly, day0 = h.time[0].slice(0, 10), tb = $("rows");
+  tb.textContent = "";
+  let cnt = 0;
+  for (let i = 0; i < h.time.length && h.time[i].slice(0, 10) === day0; i++) {
+    const f = flags[i]; if (f) cnt++;
+    const tr = document.createElement("tr"); if (f) tr.className = "ok";
+    const cells = [`${parts(h.time[i]).h}:00`, fmt(num(h.wind_speed_10m[i])), fmt(num(h.wind_gusts_10m[i])), fmt(num(h.precipitation[i])), f ? "가능" : "–"];
+    cells.forEach((c, k) => { const td = document.createElement("td"); td.textContent = c; if (k === 4 && !f) td.className = "no"; tr.appendChild(td); });
+    tb.appendChild(tr);
+  }
+  $("dayCount").textContent = `${dayLab(h.time[0])} 가능 ${cnt}시간`;
+}
+
+function showMeta() {
+  const lat = D.latitude, lon = D.longitude;
+  $("meta").textContent = `지점 ${CFG.name} (요청 ${CFG.lat.toFixed(3)}, ${CFG.lon.toFixed(3)} → 예보 격자 ${lat}, ${lon})`
+    + ` · 단위: 풍속·돌풍 km/h, 강수 mm(시간당) · 시간대 Asia/Seoul · 데이터 받은 시각 ${fetchedAt} · 시간 ${D.hourly.time.length}개`;
+}
+
+function fail(msg) {
+  D = null;
+  $("err").hidden = false;
+  $("errWhy").textContent = msg;
+  $("best").textContent = "데이터 없음";
+  $("bestMeta").textContent = "";
+  $("chart").innerHTML = `<text x="450" y="150" text-anchor="middle" style="font-size:15px">데이터 없음</text>`;
+  $("tip").hidden = true;
+  $("rows").innerHTML = `<tr><td colspan="5" class="no">데이터 없음</td></tr>`;
+  $("dayCount").textContent = "";
+  $("meta").textContent = "단위: 풍속·돌풍 km/h, 강수 mm(시간당) · 시간대 Asia/Seoul";
+}
+
+async function load() {
+  $("err").hidden = true;
+  $("best").textContent = "불러오는 중…";
+  const url = new URLSearchParams(location.search).has("fail") ? API.replace("/v1/forecast", "/v1/forecast-nope") : API;
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), TIMEOUT_MS);
+  try {
+    const r = await fetch(url, { signal: ctl.signal, cache: "no-store" });
+    if (!r.ok) throw new Error(`서버 응답 ${r.status}`);
+    const d = await r.json();
+    validate(d);
+    D = d;
+    fetchedAt = new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul", dateStyle: "medium", timeStyle: "short" });
+    draw();
+    showMeta();
+  } catch (e) {
+    const msg = e.name === "AbortError" ? `${TIMEOUT_MS / 1000}초 안에 답이 없어요` :
+      (e instanceof TypeError ? "인터넷 연결이나 서버에 닿지 못했어요" : e.message);
+    fail(msg);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+$("w").value = CFG.wind_max_kmh; $("g").value = CFG.gust_max_kmh; $("p").value = CFG.rain_max_mm;
+["w", "g", "p"].forEach(id => $(id).addEventListener("input", draw));
+$("retry").addEventListener("click", load);
+showLabels();
+load();
+</script>
+</body>
+</html>
